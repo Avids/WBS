@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Construction WBS Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="page-header">
+    <h1>Construction Project WBS Tracker</h1>
+    <p>Define budget, track weekly progress, calculate billing, and monitor productivity.</p>
+  </header>
+
+  <main class="layout">
+    <section class="card">
+      <h2>Project Setup</h2>
+      <div class="grid two">
+        <label>
+          Project Name
+          <input id="projectName" type="text" placeholder="Tower A - Core and Shell">
+        </label>
+        <label>
+          Contract Number
+          <input id="projectCode" type="text" placeholder="CN-2026-011">
+        </label>
+        <label>
+          Project Labor Rate ($/hour)
+          <input id="projectLaborRate" type="number" min="0" step="0.01" placeholder="65">
+        </label>
+        <label>
+          Contract Value ($)
+          <input id="projectContractValue" type="number" min="0" step="0.01" placeholder="1500000">
+        </label>
+      </div>
+      <div class="button-row">
+        <button id="saveProjectBtn">Save Project Info</button>
+        <button id="newProjectBtn" class="danger" type="button">New Project</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>WBS Schedule Editor</h2>
+      <div class="grid two">
+        <div>
+          <form id="wbsScheduleForm" class="grid two">
+            <label>
+              WBS Code (optional)
+              <input name="code" placeholder="Auto (e.g., 1, 1.1, 2.3)">
+            </label>
+            <label>
+              Name
+              <input name="name" required placeholder="Concrete work">
+            </label>
+            <label>
+              Budget Material Cost ($)
+              <input name="materialBudget" type="number" min="0" step="0.01" placeholder="40000">
+            </label>
+            <label>
+              Budget Labor Hours
+              <input name="laborHoursBudget" type="number" min="0" step="0.01" placeholder="800">
+            </label>
+            <label>
+              Notes
+              <input name="notes" placeholder="Optional">
+            </label>
+            <div class="form-actions inline-actions">
+              <button type="submit">Add Item</button>
+              <button id="updateScheduleBtn" type="button" class="secondary">Update Selected</button>
+              <button id="deleteScheduleBtn" type="button" class="danger">Delete Selected</button>
+            </div>
+          </form>
+          <p class="hint">Add Item now saves code, name, budget material, labor hours, and notes in one step. Labor rate is project-wide.</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>WBS</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody id="wbsScheduleBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Weekly Progress & Actual Cost Entry</h2>
+      <form id="weeklyForm" class="grid three">
+        <label>
+          Week Ending
+          <input name="weekEnding" type="date" required>
+        </label>
+        <label>
+          WBS Item
+          <select name="itemId" id="weeklyItemSelect" required></select>
+        </label>
+        <label>
+          Progress This Week (%)
+          <input name="weeklyProgressPct" type="number" min="0" max="100" step="0.01" required placeholder="5">
+        </label>
+        <label>
+          Actual Material Cost This Week ($)
+          <input name="actualMaterialCost" type="number" min="0" step="0.01" required placeholder="2500">
+        </label>
+        <label>
+          Actual Labor Hours This Week
+          <input name="actualLaborHours" type="number" min="0" step="0.01" required placeholder="110">
+        </label>
+        <label>
+          Update Notes
+          <input name="notes" placeholder="Optional">
+        </label>
+        <div class="form-actions">
+          <button type="submit">Add Weekly Update</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Project Dashboard</h2>
+      <div id="kpiCards" class="kpi-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>Monthly Billing Calculation</h2>
+      <div class="grid two">
+        <label>
+          Billing Month
+          <input id="billingMonth" type="month">
+        </label>
+      </div>
+      <div id="billingSummary" class="billing-summary"></div>
+      <div class="button-row">
+        <button id="saveToComputerBtn">Save Project File</button>
+        <button id="openFromComputerBtn" class="secondary">Open Project File</button>
+        <input id="openFileInput" type="file" accept=".json,application/json" class="hidden-input">
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>WBS Performance Table</h2>
+      <div class="button-row">
+        <button id="exportWbsBtn" class="secondary" type="button">Export WBS Table to Excel</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>WBS</th>
+              <th>Description</th>
+              <th>Budget Material</th>
+              <th>Budget Labor Hrs</th>
+              <th>Budget Total</th>
+              <th>Progress %</th>
+              <th>Actual Material</th>
+              <th>Actual Labor Hrs</th>
+              <th>Actual Total</th>
+              <th>Earned Value</th>
+              <th>Cost Variance</th>
+              <th>Productivity Index</th>
+            </tr>
+          </thead>
+          <tbody id="wbsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Recent Weekly Entries</h2>
+      <div class="button-row">
+        <button id="exportWeeklyBtn" class="secondary" type="button">Export Weekly Entries to Excel</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Week Ending</th>
+              <th>WBS</th>
+              <th>Progress %</th>
+              <th>Actual Material</th>
+              <th>Actual Labor Hrs</th>
+              <th>Actual Labor Cost</th>
+              <th>Earned This Week</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="weeklyTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
